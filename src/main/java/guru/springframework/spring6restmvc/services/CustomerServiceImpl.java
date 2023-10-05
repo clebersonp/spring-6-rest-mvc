@@ -52,6 +52,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public void deleteById(UUID customerId) {
+        this.customerMap.remove(customerId);
+    }
+
+    @Override
     public Customer saveNewCustomer(Customer customer) {
 
         Customer savedCustomer = Customer.builder()
