@@ -4,7 +4,9 @@ package guru.springframework.spring6restmvc.controller;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import guru.springframework.spring6restmvc.model.Customer;
 import guru.springframework.spring6restmvc.services.CustomerService;
@@ -52,8 +54,11 @@ class CustomerControllerTest {
     given(this.customerService.getAllCustomers()).willReturn(customers);
     this.mockMvc.perform(
             get("/api/v1/customer").accept(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.length()", is(2)))
-        .andExpect(jsonPath("$.[0].id", is(customers.get(0).getId().toString())));
+        .andExpectAll(
+            content().contentType(MediaType.APPLICATION_JSON),
+            status().isOk(),
+            jsonPath("$.length()", is(2)),
+            jsonPath("$.[0].id", is(customers.get(0).getId().toString())));
   }
 
   @Test
@@ -64,6 +69,7 @@ class CustomerControllerTest {
             get("/api/v1/customer/%s".formatted(customer.getId()))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
         .andExpect(jsonPath("$.id", is(customer.getId().toString())))
         .andExpect(jsonPath("$.name", is(customer.getName())));
   }
