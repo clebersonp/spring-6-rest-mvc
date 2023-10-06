@@ -57,7 +57,7 @@ class CustomerControllerTest {
         .andExpectAll(
             content().contentType(MediaType.APPLICATION_JSON),
             status().isOk(),
-            jsonPath("$.length()", is(2)),
+            jsonPath("$.length()", is(customers.size())),
             jsonPath("$.[0].id", is(customers.get(0).getId().toString())));
   }
 
