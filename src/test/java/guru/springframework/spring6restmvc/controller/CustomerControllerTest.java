@@ -4,6 +4,7 @@ import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -98,7 +99,7 @@ class CustomerControllerTest {
                 .content(this.objectMapper.writeValueAsString(customer)))
         .andExpect(status().isNoContent());
 
-    verify(this.customerService).updateCustomerById(customer.getId(), customer);
+    verify(this.customerService, times(1)).updateCustomerById(customer.getId(), customer);
   }
 }
 
