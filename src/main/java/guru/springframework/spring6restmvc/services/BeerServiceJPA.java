@@ -3,6 +3,7 @@ package guru.springframework.spring6restmvc.services;
 import guru.springframework.spring6restmvc.mappers.BeerMapper;
 import guru.springframework.spring6restmvc.model.BeerDTO;
 import guru.springframework.spring6restmvc.repositories.BeerRepository;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+import org.springframework.util.StringUtils;
 
 /**
  * Created by jt, Spring Framework Guru.
@@ -70,7 +72,28 @@ public class BeerServiceJPA implements BeerService {
     }
 
     @Override
-    public void patchBeerById(UUID beerId, BeerDTO beer) {
+    public Optional<BeerDTO> patchBeerById(UUID beerId, BeerDTO beer) {
+        AtomicReference<Optional<BeerDTO>> atomicReference = new AtomicReference<>();
 
+        beerRepository.findById(beerId).ifPresentOrElse(foundBeer -> {
+            if (StringUtils.hasText(beer.getBeerName())) {
+                foundBeer.setBeerName(beer.getBeerName());
+            }
+            if (Objects.nonNull(beer.getBeerStyle())) {
+                foundBeer.setBeerStyle(beer.getBeerStyle());
+            }
+            if (StringUtils.hasText(beer.getUpc())) {
+                foundBeer.setUpc(beer.getUpc());
+            }
+            if (Objects.nonNull(beer.getPrice())) {
+                foundBeer.setPrice(beer.getPrice());
+            }
+            atomicReference.set(Optional.of(beerMapper
+                .beerToBeerDto(beerRepository.save(foundBeer))));
+        }, () -> {
+            atomicReference.set(Optional.empty());
+        });
+
+        return atomicReference.get();
     }
 }
