@@ -23,6 +23,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -40,6 +41,9 @@ class CustomerControllerTest {
 
   @Autowired
   ObjectMapper objectMapper;
+
+  @Captor
+  ArgumentCaptor<UUID> argumentCaptor;
 
   CustomerServiceImpl customerServiceImpl;
 
@@ -109,8 +113,9 @@ class CustomerControllerTest {
     this.mockMvc.perform(delete("/api/v1/customer/%s".formatted(customer.getId())))
         .andExpect(status().isNoContent());
 
-    ArgumentCaptor<UUID> argumentCaptor = ArgumentCaptor.forClass(UUID.class);
-    verify(this.customerService, times(1)).deleteCustomerById(argumentCaptor.capture());
+    // or using annotation Captor
+//    ArgumentCaptor<UUID> argumentCaptor = ArgumentCaptor.forClass(UUID.class);
+    verify(this.customerService, times(1)).deleteCustomerById(this.argumentCaptor.capture());
 
     assertThat(customer.getId()).isEqualTo(argumentCaptor.getValue());
   }
