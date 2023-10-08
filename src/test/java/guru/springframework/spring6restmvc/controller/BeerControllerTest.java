@@ -24,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -88,6 +89,21 @@ class BeerControllerTest {
     }
 
     @Test
+    void testUpdateBeerAllRequiredFieldsNull() throws Exception {
+        BeerDTO beer = this.beerServiceImpl.listBeers().get(0);
+        BeerDTO beerToUpdate = BeerDTO.builder().build();
+
+        mockMvc.perform(put(BeerController.BEER_PATH_ID, beer.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(beerToUpdate)))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.length()", is(6)));
+
+        verify(beerService, times(0)).updateBeerById(any(UUID.class), any(BeerDTO.class));
+    }
+
+    @Test
     void testUpdateBeer() throws Exception {
         BeerDTO beer = beerServiceImpl.listBeers().get(0);
 
@@ -130,7 +146,7 @@ class BeerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beerDTO)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.length()", is(2)))
+                .andExpect(jsonPath("$.length()", is(6)))
                 .andReturn();
 
         System.out.println(mvcResult.getResponse().getContentAsString());
