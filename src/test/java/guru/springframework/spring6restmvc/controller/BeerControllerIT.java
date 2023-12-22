@@ -189,6 +189,7 @@ class BeerControllerIT {
                 .queryParam("beerStyle", "STOUT"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.size()", is(57)));
+        
     }
 
 }
